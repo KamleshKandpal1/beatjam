@@ -1,6 +1,13 @@
+import { ReactNode } from "react";
 import { Users, Music, Play } from "lucide-react";
 
-function FeatureCard({ icon, title, description }) {
+interface FeatureCardProps {
+  icon: ReactNode;
+  title: string;
+  description: string;
+}
+
+function FeatureCard({ icon, title, description }: FeatureCardProps) {
   return (
     <div className="bg-gray-800 p-6 rounded-lg text-center">
       <div className="inline-block mb-4">{icon}</div>
