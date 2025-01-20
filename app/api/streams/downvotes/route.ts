@@ -37,6 +37,8 @@ export async function Post(req: NextRequest) {
       },
     });
   } catch (error) {
+    console.log(error);
+
     return NextResponse.json(
       {
         message: "Unauthenticated",
