@@ -6,7 +6,7 @@ import { z } from "zod";
 const upVoteSchema = z.object({
   streamId: z.string(),
 });
-export async function Post(req: NextRequest) {
+export async function POST(req: NextRequest) {
   const session = await getServerSession();
 
   //   TODO: You can get rid ofo  the db call here
