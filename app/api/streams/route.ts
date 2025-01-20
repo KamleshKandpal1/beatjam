@@ -3,13 +3,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 // @ts-expect-error
 import youtubesearchapi from "youtube-search-api";
-let YT_REGEX =
+
+const YT_REGEX =
   /^(?:(?:https?:)?\/\/)?(?:www\.)?(?:m\.)?(?:youtu(?:be)?\.com\/(?:v\/|embed\/|watch(?:\/|\?v=))|youtu\.be\/)((?:\w|-){11})(?:\S+)?$/;
 
 const CreateStreamSchema = z.object({
   creatorId: z.string(),
   url: z.string(),
 });
+
 export async function POST(req: NextRequest) {
   try {
     const data = CreateStreamSchema.parse(await req.json());
@@ -24,10 +26,12 @@ export async function POST(req: NextRequest) {
         }
       );
     }
+
     const extractedId = data.url.split("?v=")[1];
     const res = await youtubesearchapi.GetVideoDetails(extractedId);
     console.log(res.title);
     console.log(res.thumbnail.thumbnails);
+
     const thumbnails = res.thumbnail.thumbnails;
     thumbnails.sort((a: { width: number }, b: { width: number }) =>
       a.width < b.width ? -1 : 1
@@ -50,6 +54,7 @@ export async function POST(req: NextRequest) {
           "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png",
       },
     });
+
     return NextResponse.json({
       message: "Stream Added",
       id: stream.id,
