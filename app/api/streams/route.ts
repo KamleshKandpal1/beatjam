@@ -1,7 +1,7 @@
 import { prismaClient } from "@/app/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-// @ts-expect-error
+// @ts-expect-error: Necessary to bypass type-checking for 'youtube-search-api' due to missing types.
 import youtubesearchapi from "youtube-search-api";
 
 const YT_REGEX =
