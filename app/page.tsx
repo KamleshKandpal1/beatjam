@@ -4,6 +4,7 @@ import { Features } from "./components/features";
 import { CTA } from "./components/cta";
 import { Footer } from "./components/footer";
 import bg from "./img/Hero-Bg1.jpg";
+import Redirect from "./components/Redirect";
 
 export default function Home() {
   return (
@@ -14,9 +15,10 @@ export default function Home() {
           backgroundImage: `url(${bg.src})`,
         }}
       >
-        <div className="absolute inset-0 bg-black/70" />
+        <div className="absolute inset-0 bg-black/50" />
         <div className="relative z-10">
           <Appbar />
+          <Redirect />
           <Hero />
         </div>
       </div>

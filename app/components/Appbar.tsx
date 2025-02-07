@@ -33,16 +33,7 @@ const Appbar = () => {
             How It Works
           </Link>
         </nav>
-        {/* <Button variant="outline" className="hidden md:inline-flex">
-          Log In
-        </Button> */}
         {!session.data?.user ? (
-          // <button
-          //   className="border bg-blue-500 text-white font-medium px-3 py-1 rounded-md"
-          //   onClick={() => signIn()}
-          // >
-          //   Sign In
-          // </button>
           <Button
             variant="secondary"
             className="hidden md:inline-flex"
@@ -51,12 +42,6 @@ const Appbar = () => {
             Sign In
           </Button>
         ) : (
-          // <button
-          //   className="border bg-lime-500 text-white font-medium px-3 py-1 rounded-md"
-          //   onClick={() => signOut()}
-          // >
-          //   Sign Out
-          // </button>
           <Button
             variant="secondary"
             className="hidden md:inline-flex"
