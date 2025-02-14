@@ -16,14 +16,25 @@ const handler = NextAuth({
         return false;
       }
       try {
-        await prismaClient.user.create({
-          data: {
+        // Check if the user already exists
+        const existingUser = await prismaClient.user.findUnique({
+          where: {
             email: params.user.email,
-            provider: "Google",
           },
         });
+
+        // If the user doesn't exist, create a new one
+        if (!existingUser) {
+          await prismaClient.user.create({
+            data: {
+              email: params.user.email,
+              provider: "Google",
+            },
+          });
+        }
       } catch (error) {
-        console.log(error);
+        console.error("Error during sign-in:", error);
+        return false;
       }
       return true;
     },

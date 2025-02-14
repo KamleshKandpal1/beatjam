@@ -4,15 +4,17 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 const Redirect = () => {
-  const session = useSession();
+  const { status } = useSession();
   const route = useRouter();
-  // console.log(session);
+  console.log(status);
 
   useEffect(() => {
-    if (session?.status) {
+    if (status === "authenticated") {
       route.push("/dashboard");
+    } else if (status === "unauthenticated") {
+      route.push("/"); // Redirect to base directory
     }
-  }, [route, session?.status]);
+  }, [status, route]);
 
   return null;
 };

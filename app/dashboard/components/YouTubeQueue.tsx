@@ -18,15 +18,15 @@ export default function YouTubeQueue() {
   const [previewId, setPreviewId] = useState("");
   // const REFRESH_INTERVAL_MS = 10 * 1000;
   // refresh-Stream
-  const refreshStream = async () => {
-    const res = await axios.get(`/api/streams/myQueue`);
-    console.log(res);
-  };
+  // const refreshStream = async () => {
+  //   const res = await axios.get(`/api/streams/myQueue`);
+  //   // console.log(res);
+  // };
 
-  useEffect(() => {
-    refreshStream();
-    // const interval = setInterval(() => {}, REFRESH_INTERVAL_MS);
-  }, []);
+  // useEffect(() => {
+  //   refreshStream();
+  //   // const interval = setInterval(() => {}, REFRESH_INTERVAL_MS);
+  // }, []);
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const url = e.target.value;
