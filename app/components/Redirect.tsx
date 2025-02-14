@@ -1,5 +1,4 @@
 "use client";
-import { log } from "console";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -13,7 +12,7 @@ const Redirect = () => {
     if (session?.status) {
       route.push("/dashboard");
     }
-  }, []);
+  }, [route, session?.status]);
 
   return null;
 };
