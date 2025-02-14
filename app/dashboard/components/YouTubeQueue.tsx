@@ -56,7 +56,7 @@ export default function YouTubeQueue() {
     newQueue.sort((a, b) => b.votes - a.votes);
     setQueue(newQueue);
     const res = await axios.post(`/api/streams/upvotes`);
-    console.log(res);
+    // console.log(res);
   };
 
   const handleShare = async () => {

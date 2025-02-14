@@ -29,8 +29,8 @@ export async function POST(req: NextRequest) {
 
     const extractedId = data.url.split("?v=")[1];
     const res = await youtubesearchapi.GetVideoDetails(extractedId);
-    console.log(res.title);
-    console.log(res.thumbnail.thumbnails);
+    // console.log(res.title);
+    // console.log(res.thumbnail.thumbnails);
 
     const thumbnails = res.thumbnail.thumbnails;
     thumbnails.sort((a: { width: number }, b: { width: number }) =>
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
       id: stream.id,
     });
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return NextResponse.json(
       {
         message: "Error while adding a stream",
