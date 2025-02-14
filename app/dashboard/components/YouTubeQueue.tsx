@@ -16,7 +16,7 @@ export default function YouTubeQueue() {
     { id: string; votes: number; url: string }[]
   >([]);
   const [previewId, setPreviewId] = useState("");
-  const REFRESH_INTERVAL_MS = 10 * 1000;
+  // const REFRESH_INTERVAL_MS = 10 * 1000;
   // refresh-Stream
   const refreshStream = async () => {
     const res = await axios.get(`/api/streams/myQueue`);
@@ -25,7 +25,7 @@ export default function YouTubeQueue() {
 
   useEffect(() => {
     refreshStream();
-    const interval = setInterval(() => {}, REFRESH_INTERVAL_MS);
+    // const interval = setInterval(() => {}, REFRESH_INTERVAL_MS);
   }, []);
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,8 +1,8 @@
 import { prismaClient } from "@/app/lib/db";
 import { getServerSession } from "next-auth";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const session = await getServerSession();
 
   const user = await prismaClient.user.findFirst({
@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
   if (!user) {
     return NextResponse.json(
       {
-        message: "Unauhtenticated",
+        message: "Unauthenticated",
       },
       {
         status: 403,
@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
     streams: streams.map(({ _count, ...rest }) => ({
       ...rest,
       upvotes: _count.upvotes,
-      haveUpvoted: rest.upvotes.length ? true : false,
+      haveUpvoted: rest.upvotes.length > 0,
     })),
   });
 }

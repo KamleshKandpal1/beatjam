@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Youtube, ThumbsUp, ThumbsDown } from "lucide-react";
+import Image from "next/image";
 
 interface VideoQueueProps {
   queue: { id: string; votes: number; url: string }[];
@@ -24,9 +25,11 @@ export function VideoQueue({ queue, handleVote }: VideoQueueProps) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="overflow-hidden rounded-md shadow-sm">
-                    <img
+                    <Image
                       src={`https://img.youtube.com/vi/${video.id}/default.jpg`}
                       alt="Video thumbnail"
+                      width={96}
+                      height={72}
                       className="w-24 h-18 object-cover transform hover:scale-105 transition-transform duration-300"
                     />
                   </div>
