@@ -4,7 +4,13 @@ import { Youtube, ThumbsUp, ThumbsDown } from "lucide-react";
 import Image from "next/image";
 
 interface VideoQueueProps {
-  queue: { id: string; votes: number; url: string }[];
+  queue: {
+    id: string;
+    votes: number;
+    url: string;
+    smallImg: string;
+    title: string;
+  }[];
   handleVote: (index: number, increment: number) => void;
 }
 
@@ -26,15 +32,15 @@ export function VideoQueue({ queue, handleVote }: VideoQueueProps) {
                 <div className="flex items-center gap-4">
                   <div className="overflow-hidden rounded-md shadow-sm">
                     <Image
-                      src={`https://img.youtube.com/vi/${video.id}/default.jpg`}
+                      src={video?.smallImg}
                       alt="Video thumbnail"
                       width={96}
                       height={72}
-                      className="w-24 h-18 object-cover transform hover:scale-105 transition-transform duration-300"
+                      className="w-24 h-18 object-cover transform hover:scale-105 transition-transform duration-300 cursor-pointer"
                     />
                   </div>
-                  <span className="font-medium text-white">
-                    Video ID: {video.id}
+                  <span className="font-medium text-slate-500">
+                    {video?.title}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">

@@ -31,7 +31,7 @@ export function VideoSubmissionForm({
               placeholder="Paste YouTube URL here"
               value={videoUrl}
               onChange={handleUrlChange}
-              className="bg-white/20 text-white placeholder-white/50"
+              className="bg-white/20 text-black placeholder-white/50"
             />
             <Button
               type="submit"
@@ -42,7 +42,7 @@ export function VideoSubmissionForm({
             </Button>
           </div>
           {previewId && (
-            <div className="aspect-video rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+            <div className="aspect-video rounded-lg overflow-hidden shadow-lg transition-all duration-300 hidden md:block">
               <iframe
                 className="w-full h-full"
                 src={`https://www.youtube.com/embed/${previewId}`}
