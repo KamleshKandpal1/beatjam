@@ -96,7 +96,7 @@ export default function YouTubeQueue() {
       console.error("Error fetching streams:", error);
     }
   };
-  const REFRESH_INTERVAL_MS = 10 * 1000;
+  const REFRESH_INTERVAL_MS = 10 * 10000;
 
   useEffect(() => {
     const intervals = setInterval(() => {
@@ -106,7 +106,7 @@ export default function YouTubeQueue() {
     }, REFRESH_INTERVAL_MS);
 
     return () => clearInterval(intervals);
-  }, [userEmail]);
+  }, [userEmail, REFRESH_INTERVAL_MS, getQueue]);
 
   const handleVote = async (index: number, increment: number) => {
     const newQueue = [...queue];
