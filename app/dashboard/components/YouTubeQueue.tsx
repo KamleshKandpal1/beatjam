@@ -130,7 +130,7 @@ export default function YouTubeQueue() {
     newQueue[index].votes += increment;
     newQueue.sort((a, b) => b.votes - a.votes);
     setQueue(newQueue);
-    const res = await axios.post(`/api/streams/upvotes`);
+    // const res = await axios.post(`/api/streams/upvotes`);
     // console.log(res);
   };
 
