@@ -104,9 +104,9 @@ export default function YouTubeQueue() {
         },
       });
       console.log(response);
-
       if (response.status === 200) {
         setQueue(response.data.streams);
+        setCurrentVideo(response.data.streams[0].extractedId);
       }
     } catch (error) {
       console.error("Error fetching streams:", error);
