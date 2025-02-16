@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CurrentVideo } from "./CurrentVideo";
 import { VideoSubmissionForm } from "./VideoSubmissionForm";
 import { VideoQueue } from "./VideoQueue";
@@ -80,7 +80,23 @@ export default function YouTubeQueue() {
     }
   };
 
-  const getQueue = async () => {
+  // const getQueue = async () => {
+  //   try {
+  //     const response = await axios.get(`/api/streams`, {
+  //       params: {
+  //         email: userEmail,
+  //       },
+  //     });
+  //     console.log(response);
+  //     setCurrentVideo(response.data.streams[0].extractedId);
+  //     if (response.status === 200) {
+  //       setQueue(response.data.streams);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching streams:", error);
+  //   }
+  // };
+  const getQueue = useCallback(async () => {
     try {
       const response = await axios.get(`/api/streams`, {
         params: {
@@ -88,14 +104,15 @@ export default function YouTubeQueue() {
         },
       });
       console.log(response);
-      setCurrentVideo(response.data.streams[0].extractedId);
+
       if (response.status === 200) {
         setQueue(response.data.streams);
       }
     } catch (error) {
       console.error("Error fetching streams:", error);
     }
-  };
+  }, [userEmail]);
+
   const REFRESH_INTERVAL_MS = 10 * 10000;
 
   useEffect(() => {
