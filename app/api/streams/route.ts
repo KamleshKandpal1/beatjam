@@ -5,7 +5,9 @@ import { z } from "zod";
 import youtubesearchapi from "youtube-search-api";
 
 const YT_REGEX =
-  /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})$/;
+  /^(?:(?:https?:)?\/\/)?(?:www\.)?(?:m\.)?(?:youtu(?:be)?\.com\/(?:v\/|embed\/|watch(?:\/|\?v=))|youtu\.be\/)((?:\w|-){11})(?:\S+)?$/;
+
+// /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})$/;
 
 const CreateStreamSchema = z.object({
   url: z.string(),
@@ -40,6 +42,21 @@ export async function POST(req: NextRequest) {
     }
 
     const extractedId = isYT[1];
+
+    // 🔥 **Check if extractedId already exists**
+    const existingStream = await prismaClient.stream.findFirst({
+      where: {
+        extractedId,
+      },
+    });
+
+    if (existingStream) {
+      return NextResponse.json(
+        { message: "Video Already Exists in the Queue" },
+        { status: 400 }
+      );
+    }
+
     const res = await youtubesearchapi.GetVideoDetails(extractedId);
 
     // console.log(res.title);
@@ -112,9 +129,20 @@ export async function GET(req: NextRequest) {
     where: {
       userId: user.id,
     },
+    include: {
+      upvotes: true,
+    },
   });
+  const formattedStreams = streams.map((stream) => ({
+    id: stream.id,
+    url: stream.url,
+    extractedId: stream.extractedId,
+    title: stream.title,
+    smallImg: stream.smallImg,
+    upvotes: stream.upvotes.length, // Count the number of upvotes
+  }));
 
   return NextResponse.json({
-    streams,
+    streams: formattedStreams,
   });
 }

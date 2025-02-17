@@ -40,14 +40,14 @@ export async function POST(req: NextRequest) {
       message: "Done!",
     });
   } catch (error) {
-    return NextResponse.json({ message: error }, { status: 400 });
-
+    console.error("Error while upvoting:", error);
     return NextResponse.json(
       {
-        message: "Unauthenticated",
+        message: "Error while upvoting",
+        // error: error.message,
       },
       {
-        status: 403,
+        status: 400,
       }
     );
   }

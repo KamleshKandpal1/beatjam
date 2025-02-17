@@ -2,19 +2,41 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Youtube, ThumbsUp, ThumbsDown } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 interface VideoQueueProps {
   queue: {
     id: string;
-    votes: number;
+    upvotes: number;
     url: string;
     smallImg: string;
     title: string;
   }[];
-  handleVote: (index: number, increment: number) => void;
+  upVote: (streamId: string, index: number) => void;
+  downVote: (streamId: string, index: number) => void;
 }
 
-export function VideoQueue({ queue, handleVote }: VideoQueueProps) {
+export function VideoQueue({ queue, upVote, downVote }: VideoQueueProps) {
+  const [sortedQueue, setSortedQueue] = useState([...queue]);
+
+  // Sync state when queue prop updates
+  useEffect(() => {
+    setSortedQueue([...queue].sort((a, b) => b.upvotes - a.upvotes));
+  }, [queue]);
+
+  const handleVote = (index: number, increment: number) => {
+    setSortedQueue((prevQueue) => {
+      const updatedQueue = [...prevQueue]; // Copy the array
+      updatedQueue[index] = {
+        ...updatedQueue[index], // Copy the object
+        upvotes: updatedQueue[index].upvotes + increment,
+      };
+      return updatedQueue.sort((a, b) => b.upvotes - a.upvotes); // Sort after updating
+    });
+  };
+
+  // console.log("Sorted Queue:", sortedQueue); // Now should log correctly
+
   return (
     <Card className="p-6 backdrop-blur-sm bg-white/10 border-0 shadow-xl">
       <div className="space-y-4">
@@ -23,7 +45,7 @@ export function VideoQueue({ queue, handleVote }: VideoQueueProps) {
           Queue
         </h2>
         <div className="space-y-3">
-          {queue.map((video, index) => (
+          {sortedQueue.map((video, index) => (
             <Card
               key={video.id}
               className="p-4 hover:shadow-lg transition-all duration-300 bg-white/20 border-0"
@@ -32,7 +54,7 @@ export function VideoQueue({ queue, handleVote }: VideoQueueProps) {
                 <div className="flex items-center gap-4">
                   <div className="overflow-hidden rounded-md shadow-sm">
                     <Image
-                      src={video?.smallImg}
+                      src={video.smallImg}
                       alt="Video thumbnail"
                       width={96}
                       height={72}
@@ -40,17 +62,20 @@ export function VideoQueue({ queue, handleVote }: VideoQueueProps) {
                     />
                   </div>
                   <span className="font-medium text-slate-500">
-                    {video?.title}
+                    {video.title}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-lg w-12 text-center text-white">
-                    {video.votes}
+                  <span className="font-bold text-lg w-12 text-center text-slate-500">
+                    {video.upvotes}
                   </span>
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => handleVote(index, 1)}
+                    onClick={() => {
+                      upVote(video.id, index);
+                      handleVote(index, 1);
+                    }}
                     className="bg-green-500/20 hover:bg-green-500/40 text-white"
                   >
                     <ThumbsUp className="h-4 w-4" />
@@ -58,7 +83,10 @@ export function VideoQueue({ queue, handleVote }: VideoQueueProps) {
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => handleVote(index, -1)}
+                    onClick={() => {
+                      downVote(video.id, index);
+                      handleVote(index, -1);
+                    }}
                     className="bg-red-500/20 hover:bg-red-500/40 text-white"
                   >
                     <ThumbsDown className="h-4 w-4" />
@@ -67,7 +95,7 @@ export function VideoQueue({ queue, handleVote }: VideoQueueProps) {
               </div>
             </Card>
           ))}
-          {queue.length === 0 && (
+          {sortedQueue.length === 0 && (
             <div className="text-center py-8 text-white/80">
               No videos in queue. Add some!
             </div>

@@ -36,7 +36,7 @@ const Appbar = () => {
         {!session.data?.user ? (
           <Button
             variant="secondary"
-            className="hidden md:inline-flex"
+            className="inline-flex"
             onClick={() => signIn()}
           >
             Sign In
@@ -44,7 +44,7 @@ const Appbar = () => {
         ) : (
           <Button
             variant="secondary"
-            className="hidden md:inline-flex"
+            className="inline-flex"
             onClick={() => signOut()}
           >
             Sign Out
