@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 const StreamIdSchema = z.object({
-  streamId: z.string().uuid(), // Ensuring it's a valid UUID
+  streamId: z.string(), // Ensuring it's a valid UUID
 });
 
 export async function DELETE(
