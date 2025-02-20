@@ -16,7 +16,7 @@ export default function YouTubeQueue() {
   const [queue, setQueue] = useState<
     {
       id: string;
-      type: Boolean;
+      type: boolean;
       url: string;
       extractedId: string;
       title: string;

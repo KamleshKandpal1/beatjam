@@ -10,7 +10,7 @@ import { toast } from "sonner";
 interface VideoQueueProps {
   queue: {
     id: string;
-    type: Boolean;
+    type: boolean;
     url: string;
     extractedId: string;
     title: string;
