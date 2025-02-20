@@ -110,7 +110,7 @@ export default function YouTubeQueue() {
   }, [userEmail, getQueue]);
 
   // Api Calls for Voting Starts from here
-  const upVote = async (streamId: string, index: number) => {
+  const upVote = async (streamId: string) => {
     try {
       // Call the API
       await axios.post(`/api/streams/upvotes`, { streamId });
