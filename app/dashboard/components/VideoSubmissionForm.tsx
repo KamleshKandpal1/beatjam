@@ -1,12 +1,13 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Youtube } from "lucide-react";
+import { Loader2, Youtube } from "lucide-react";
 import type React from "react"; // Added import for React
 
 interface VideoSubmissionFormProps {
   videoUrl: string;
   previewId: string;
+  loading: boolean;
   handleUrlChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: (e: React.FormEvent) => void;
 }
@@ -16,6 +17,7 @@ export function VideoSubmissionForm({
   previewId,
   handleUrlChange,
   handleSubmit,
+  loading,
 }: VideoSubmissionFormProps) {
   return (
     <Card className="p-6 backdrop-blur-sm bg-white/10 border-0 shadow-xl">
@@ -35,10 +37,15 @@ export function VideoSubmissionForm({
             />
             <Button
               type="submit"
-              className="bg-violet-500 hover:bg-violet-600 text-white"
+              className="bg-violet-500 hover:bg-violet-600 text-white flex items-center gap-2"
+              disabled={loading}
             >
-              <Youtube className="w-4 h-4 mr-2" />
-              Add
+              {loading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Youtube className="w-4 h-4" />
+              )}
+              {loading ? "Adding..." : "Add"}
             </Button>
           </div>
           {previewId && (

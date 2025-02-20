@@ -4,48 +4,54 @@ import { useCallback, useEffect, useState } from "react";
 import { CurrentVideo } from "./CurrentVideo";
 import { VideoSubmissionForm } from "./VideoSubmissionForm";
 import { VideoQueue } from "./VideoQueue";
-// import { generateShareableLink } from "@/lib/utils";
-// import bg from "../img/Hero-Bg1.jpg";
+import { generateShareableLink, getYouTubeVideoId } from "@/lib/utils";
 import bg from "../../img/Hero-Bg2.jpg";
-// import { ShareButton } from "./ShareButton";
+import { ShareButton } from "./ShareButton";
 import axios from "axios";
+import { toast } from "sonner";
 import { useSession } from "next-auth/react";
-import { toast } from "@/hooks/use-toast";
 export default function YouTubeQueue() {
   const [videoUrl, setVideoUrl] = useState("");
   const [currentVideo, setCurrentVideo] = useState("");
   const [queue, setQueue] = useState<
     {
       id: string;
-      upvotes: number;
+      type: Boolean;
       url: string;
-      smallImg: string;
+      extractedId: string;
       title: string;
+      smallImg: string;
+      bigImg: string;
+      upvotes: number;
+      userId: string;
+      user: {
+        id: string;
+        email: string;
+        provider: string;
+      };
     }[]
   >([]);
   const [previewId, setPreviewId] = useState("");
   const session = useSession();
   const userEmail = session?.data?.user?.email;
+  const [loading, setLoading] = useState(false);
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const url = e.target.value;
     setVideoUrl(url);
-    // setPreviewId(getYouTubeVideoId(url));
+    setPreviewId(getYouTubeVideoId(url));
   };
 
   // Add youtube url to queue
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      if (!videoUrl) {
-        // alert("Invalid YouTube URL");
-        toast({
-          title: "Invalid YouTube URL",
-          // description: "Friday, February 10, 2023 at 5:57 PM",
-        });
-        return;
-      }
+      if (!videoUrl.trim()) return toast.error("Please enter a valid URL");
 
+      if (!userEmail) {
+        return toast.error("User email not found. Please login again.");
+      }
+      setLoading(true);
       try {
         const response = await axios.post(`/api/streams`, {
           url: videoUrl,
@@ -53,23 +59,18 @@ export default function YouTubeQueue() {
         });
 
         if (response.status === 200) {
-          // alert("Video added to queue!");
-          toast({
-            title: "Video added to queue.",
-            // description: "Friday, February 10, 2023 at 5:57 PM",
-          });
+          toast.success("Video added to queue!");
+
           setVideoUrl("");
           setPreviewId("");
           getQueue(); // Fetch updated queue only once
         } else {
-          // alert("Failed to add video.");
-          toast({
-            title: "Failed to add video.",
-            // description: "Friday, February 10, 2023 at 5:57 PM",
-          });
+          toast.error("Error adding to queue!");
         }
       } catch (error) {
         console.error("Error adding video:", error);
+      } finally {
+        setLoading(false);
       }
     },
     [videoUrl, userEmail]
@@ -77,6 +78,7 @@ export default function YouTubeQueue() {
 
   // get data for queue
   const getQueue = useCallback(async () => {
+    if (!userEmail) return; // Ensure userEmail is available
     try {
       const response = await axios.get(`/api/streams`, {
         params: {
@@ -101,7 +103,7 @@ export default function YouTubeQueue() {
       const interval = setInterval(() => {
         getQueue();
         // console.log(queue);
-      }, 30000); // Fetch every 5 seconds instead of every second
+      }, 300000); // Fetch every 5 seconds instead of every second
 
       return () => clearInterval(interval); // Cleanup on unmount
     }
@@ -110,47 +112,26 @@ export default function YouTubeQueue() {
   // Api Calls for Voting Starts from here
   const upVote = async (streamId: string, index: number) => {
     try {
-      // Optimistically update the UI
-      // handleVote(index, 1);
-
       // Call the API
       await axios.post(`/api/streams/upvotes`, { streamId });
-
-      // Fetch the latest queue from the backend for accuracy
-      await getQueue();
+      toast.success("Upvoted Successfully");
+      getQueue();
     } catch (error) {
       console.error("Error upvoting:", error);
-      // alert("Failed to upvote. Please try again.");
-      toast({
-        title: "Failed to upvote. Please try again.",
-        // description: "Friday, February 10, 2023 at 5:57 PM",
-      });
 
-      // Revert UI update if API fails
-      handleVote(index, -1);
+      // alert("Failed to upvote. Please try again.");
     }
   };
 
   const downVote = async (streamId: string, index: number) => {
     try {
-      // Optimistically update the UI
-      // handleVote(index, -1);
-
       // Call the API
       await axios.post(`/api/streams/downvotes`, { streamId });
-
-      // Fetch the latest queue from the backend for accuracy
-      await getQueue();
+      toast.success("Downvoted Successfully");
+      getQueue();
     } catch (error) {
       console.error("Error downvoting:", error);
       alert("Failed to downvote. Please try again.");
-      toast({
-        title: "Failed to downvote. Please try again.",
-        description: "Friday, February 10, 2023 at 5:57 PM",
-      });
-
-      // Revert UI update if API fails
-      handleVote(index, 1);
     }
   };
 
@@ -166,35 +147,35 @@ export default function YouTubeQueue() {
     });
   };
 
-  // const handleShare = async () => {
-  //   const shareableLink = generateShareableLink(currentVideo);
+  const handleShare = async () => {
+    if (!currentVideo) {
+      return toast.error("No video to share!");
+    }
+    const shareableLink = generateShareableLink(currentVideo);
 
-  //   if (navigator.share) {
-  //     try {
-  //       await navigator.share({
-  //         title: "Check out my YouTube Queue!",
-  //         text: "I've created an awesome playlist. Check it out!",
-  //         url: shareableLink,
-  //       });
-  //     } catch (error) {
-  //       console.error("Error sharing:", error);
-  //     }
-  //   } else {
-  //     // Fallback to copying to clipboard
-  //     navigator.clipboard.writeText(shareableLink).then(
-  //       () => {
-  //         alert("Link copied to clipboard!");
-  // toast({
-  //   title: "Link copied to clipboard.",
-  //   description: "Friday, February 10, 2023 at 5:57 PM",
-  // })
-  //       },
-  //       (err) => {
-  //         console.error("Could not copy text: ", err);
-  //       }
-  //     );
-  //   }
-  // };
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Check out my YouTube Queue!",
+          text: "I've created an awesome playlist. Check it out!",
+          url: shareableLink,
+        });
+      } catch (error) {
+        console.error("Error sharing:", error);
+      }
+    } else {
+      // Fallback to copying to clipboard
+      navigator.clipboard.writeText(shareableLink).then(
+        () => {
+          toast.success("Link copied to clipboard!");
+        },
+        (err) => {
+          console.error("Could not copy text: ", err);
+          toast.error("Failed to copy link!");
+        }
+      );
+    }
+  };
 
   return (
     <div
@@ -213,7 +194,9 @@ export default function YouTubeQueue() {
             </h1>
             <p className="text-white/80">Vote for the next song to be played</p>
           </div>
-          <div>{/* <ShareButton onShare={handleShare} /> */}</div>
+          <div>
+            <ShareButton onShare={handleShare} />
+          </div>
         </div>
 
         <div className="md:grid gap-8 md:grid-cols-2 flex flex-col-reverse">
@@ -223,6 +206,7 @@ export default function YouTubeQueue() {
             previewId={previewId}
             handleUrlChange={handleUrlChange}
             handleSubmit={handleSubmit}
+            loading={loading}
           />
         </div>
 
@@ -231,6 +215,7 @@ export default function YouTubeQueue() {
           // handleVote={handleVote}
           upVote={upVote}
           downVote={downVote}
+          getQueue={getQueue}
         />
       </div>
     </div>

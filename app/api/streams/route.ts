@@ -19,14 +19,17 @@ export async function POST(req: NextRequest) {
     const data = CreateStreamSchema.parse(await req.json());
 
     // Get User ID from User table
-    const user = await prismaClient.user.findUnique({
+    const user = await prismaClient.user.findFirst({
       where: {
         email: data.email,
       },
     });
 
-    if (!user) {
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    if (!user || !user.id) {
+      return NextResponse.json(
+        { message: "User not found in database" },
+        { status: 404 }
+      );
     }
 
     const isYT = data.url.match(YT_REGEX);
@@ -52,15 +55,13 @@ export async function POST(req: NextRequest) {
 
     if (existingStream) {
       return NextResponse.json(
-        { message: "Video Already Exists in the Queue" },
+        { message: "Video Already Exists" },
         { status: 400 }
       );
     }
 
     const res = await youtubesearchapi.GetVideoDetails(extractedId);
-
-    // console.log(res.title);
-    // console.log(res.thumbnail.thumbnails);
+    console.log(res);
 
     const thumbnails = res.thumbnail.thumbnails;
     thumbnails.sort((a: { width: number }, b: { width: number }) =>
@@ -88,7 +89,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       message: "Stream Added",
       id: stream.id,
-      // stream,
     });
   } catch (error) {
     console.error("Error adding video:", error);
@@ -104,45 +104,58 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const email = req.nextUrl.searchParams.get("email");
+  try {
+    const email = req.nextUrl.searchParams.get("email");
 
-  if (!email) {
+    if (!email) {
+      return NextResponse.json(
+        { message: "Email query parameter is required" },
+        { status: 400 }
+      );
+    }
+
+    // Get User ID from User table using email
+    const user = await prismaClient.user.findUnique({
+      where: { email },
+      select: { id: true, email: true }, // Select only required fields
+    });
+
+    if (!user) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+
+    // Now get streams using the found user ID
+    const streams = await prismaClient.stream.findMany({
+      where: { userId: user.id },
+      include: { upvotes: true },
+    });
+
+    // Format response
+    const formattedStreams = streams.map((stream) => ({
+      id: stream.id,
+      type: stream.type,
+      url: stream.url,
+      extractedId: stream.extractedId,
+      title: stream.title,
+      smallImg: stream.smallImg,
+      bigImg: stream.bigImg,
+      upvotes: stream.upvotes.length, // Count upvotes
+      userId: stream.userId,
+      user: { email: user.email }, // Only include necessary user data
+    }));
+
     return NextResponse.json(
-      { message: "Email query parameter is required" },
-      { status: 400 }
+      {
+        streams: formattedStreams,
+        message: "Streams fetched successfully",
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error fetching streams:", error);
+    return NextResponse.json(
+      { message: "Error fetching streams" },
+      { status: 500 }
     );
   }
-
-  // Get User ID from User table using email
-  const user = await prismaClient.user.findUnique({
-    where: {
-      email,
-    },
-  });
-
-  if (!user) {
-    return NextResponse.json({ message: "User not found" }, { status: 404 });
-  }
-
-  // Now get streams using the found user ID
-  const streams = await prismaClient.stream.findMany({
-    where: {
-      userId: user.id,
-    },
-    include: {
-      upvotes: true,
-    },
-  });
-  const formattedStreams = streams.map((stream) => ({
-    id: stream.id,
-    url: stream.url,
-    extractedId: stream.extractedId,
-    title: stream.title,
-    smallImg: stream.smallImg,
-    upvotes: stream.upvotes.length, // Count the number of upvotes
-  }));
-
-  return NextResponse.json({
-    streams: formattedStreams,
-  });
 }

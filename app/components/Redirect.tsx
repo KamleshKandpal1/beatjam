@@ -2,19 +2,36 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 const Redirect = () => {
-  const { status } = useSession();
+  const { status, data: session } = useSession();
   const route = useRouter();
-  // console.log(status);
 
   useEffect(() => {
-    if (status === "authenticated") {
+    if (typeof window === "undefined") return; // Ensure we're on the client side
+
+    const hasShownToast = localStorage.getItem("hasShownToast");
+
+    if (status === "authenticated" && hasShownToast !== "authenticated") {
       route.push("/dashboard");
-    } else if (status === "unauthenticated") {
-      route.push("/"); // Redirect to base directory
+
+      setTimeout(() => {
+        toast.info(`Welcome, ${session?.user?.name}`);
+        localStorage.setItem("hasShownToast", "authenticated"); // Store toast state
+      }, 100);
+    } else if (
+      status === "unauthenticated" &&
+      hasShownToast !== "unauthenticated"
+    ) {
+      route.push("/");
+
+      setTimeout(() => {
+        toast.info("Logged-Out");
+        localStorage.setItem("hasShownToast", "unauthenticated");
+      }, 100);
     }
-  }, [status, route]); // Proper dependencies
+  }, [status, route, session]);
 
   return null;
 };
