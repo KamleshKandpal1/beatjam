@@ -45,7 +45,7 @@ export function VideoQueue({
       setLoading(false); // Stop loading
     };
     fetchQueue();
-  }, []);
+  }, [getQueue]);
 
   // Sync sortedQueue when queue updates
   useEffect(() => {
