@@ -123,7 +123,7 @@ export default function YouTubeQueue() {
     }
   };
 
-  const downVote = async (streamId: string, index: number) => {
+  const downVote = async (streamId: string) => {
     try {
       // Call the API
       await axios.post(`/api/streams/downvotes`, { streamId });
@@ -133,18 +133,6 @@ export default function YouTubeQueue() {
       console.error("Error downvoting:", error);
       alert("Failed to downvote. Please try again.");
     }
-  };
-
-  const handleVote = (index: number, increment: number) => {
-    setQueue((prevQueue) => {
-      const newQueue = [...prevQueue];
-      newQueue[index] = {
-        ...newQueue[index],
-        upvotes: newQueue[index].upvotes + increment,
-      };
-      newQueue.sort((a, b) => b.upvotes - a.upvotes);
-      return newQueue;
-    });
   };
 
   const handleShare = async () => {
