@@ -3,42 +3,38 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-// Define validation schema
 const StreamIdSchema = z.object({
   streamId: z.string().uuid(), // Ensuring it's a valid UUID
 });
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: { streamId: string } } // Fix: Extract params correctly
+  { params }: { params: Record<string, string> }
 ) {
+  const streamId = params.streamId;
+
+  if (!streamId) {
+    return NextResponse.json(
+      { message: "Stream ID is required" },
+      { status: 400 }
+    );
+  }
+
+  // Validate streamId using Zod
+  const validation = StreamIdSchema.safeParse({ streamId });
+  if (!validation.success) {
+    return NextResponse.json({ message: "Invalid Stream ID" }, { status: 400 });
+  }
+
+  // Get logged-in user session
+  const session = await getServerSession();
+  const userEmail = session?.user?.email;
+
+  if (!userEmail) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
   try {
-    const { streamId } = context.params; // Access params properly
-
-    if (!streamId) {
-      return NextResponse.json(
-        { message: "Stream ID is required" },
-        { status: 400 }
-      );
-    }
-
-    // Validate streamId using Zod
-    const validation = StreamIdSchema.safeParse({ streamId });
-    if (!validation.success) {
-      return NextResponse.json(
-        { message: "Invalid Stream ID" },
-        { status: 400 }
-      );
-    }
-
-    // Get logged-in user session
-    const session = await getServerSession();
-    const userEmail = session?.user?.email;
-
-    if (!userEmail) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-
     const existingStream = await prismaClient.stream.findUnique({
       where: { id: streamId },
       include: { user: true }, // Include user to verify ownership
