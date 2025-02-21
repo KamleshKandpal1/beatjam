@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { CurrentVideo } from "./CurrentVideo";
 import { VideoSubmissionForm } from "./VideoSubmissionForm";
 import { VideoQueue } from "./VideoQueue";
-import { generateShareableLink, getYouTubeVideoId } from "@/lib/utils";
+import { getYouTubeVideoId } from "@/lib/utils";
 import bg from "../../img/Hero-Bg2.jpg";
 // import { ShareButton } from "./ShareButton";
 import axios from "axios";
