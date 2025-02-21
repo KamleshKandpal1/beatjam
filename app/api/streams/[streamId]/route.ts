@@ -9,9 +9,9 @@ const StreamIdSchema = z.object({
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: { streamId: string } } // Explicit type for context
+  { params }: { params: { streamId: string } }
 ): Promise<NextResponse> {
-  const streamId = context.params.streamId;
+  const { streamId } = params;
 
   if (!streamId) {
     return NextResponse.json(
