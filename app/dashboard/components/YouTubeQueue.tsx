@@ -6,7 +6,7 @@ import { VideoSubmissionForm } from "./VideoSubmissionForm";
 import { VideoQueue } from "./VideoQueue";
 import { generateShareableLink, getYouTubeVideoId } from "@/lib/utils";
 import bg from "../../img/Hero-Bg2.jpg";
-import { ShareButton } from "./ShareButton";
+// import { ShareButton } from "./ShareButton";
 import axios from "axios";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
@@ -135,35 +135,35 @@ export default function YouTubeQueue() {
     }
   };
 
-  const handleShare = async () => {
-    if (!currentVideo) {
-      return toast.error("No video to share!");
-    }
-    const shareableLink = generateShareableLink(currentVideo);
+  // const handleShare = async () => {
+  //   if (!currentVideo) {
+  //     return toast.error("No video to share!");
+  //   }
+  //   const shareableLink = generateShareableLink(currentVideo);
 
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "Check out my YouTube Queue!",
-          text: "I've created an awesome playlist. Check it out!",
-          url: shareableLink,
-        });
-      } catch (error) {
-        console.error("Error sharing:", error);
-      }
-    } else {
-      // Fallback to copying to clipboard
-      navigator.clipboard.writeText(shareableLink).then(
-        () => {
-          toast.success("Link copied to clipboard!");
-        },
-        (err) => {
-          console.error("Could not copy text: ", err);
-          toast.error("Failed to copy link!");
-        }
-      );
-    }
-  };
+  //   if (navigator.share) {
+  //     try {
+  //       await navigator.share({
+  //         title: "Check out my YouTube Queue!",
+  //         text: "I've created an awesome playlist. Check it out!",
+  //         url: shareableLink,
+  //       });
+  //     } catch (error) {
+  //       console.error("Error sharing:", error);
+  //     }
+  //   } else {
+  //     // Fallback to copying to clipboard
+  //     navigator.clipboard.writeText(shareableLink).then(
+  //       () => {
+  //         toast.success("Link copied to clipboard!");
+  //       },
+  //       (err) => {
+  //         console.error("Could not copy text: ", err);
+  //         toast.error("Failed to copy link!");
+  //       }
+  //     );
+  //   }
+  // };
 
   return (
     <div
@@ -182,9 +182,7 @@ export default function YouTubeQueue() {
             </h1>
             <p className="text-white/80">Vote for the next song to be played</p>
           </div>
-          <div>
-            <ShareButton onShare={handleShare} />
-          </div>
+          <div>{/* <ShareButton onShare={handleShare} /> */}</div>
         </div>
 
         <div className="md:grid gap-8 md:grid-cols-2 flex flex-col-reverse">
