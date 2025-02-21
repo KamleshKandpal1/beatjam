@@ -4,14 +4,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 const StreamIdSchema = z.object({
-  streamId: z.string(), // Ensuring it's a valid UUID
+  streamId: z.string(),
 });
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { streamId: string } }
+  { params }: { params: Record<string, string> }
 ): Promise<NextResponse> {
-  const { streamId } = params;
+  const streamId = params.streamId;
 
   if (!streamId) {
     return NextResponse.json(
@@ -26,7 +26,6 @@ export async function DELETE(
     return NextResponse.json({ message: "Invalid Stream ID" }, { status: 400 });
   }
 
-  // Get logged-in user session
   const session = await getServerSession();
   const userEmail = session?.user?.email;
 
@@ -37,7 +36,7 @@ export async function DELETE(
   try {
     const existingStream = await prismaClient.stream.findUnique({
       where: { id: streamId },
-      include: { user: true }, // Include user to verify ownership
+      include: { user: true },
     });
 
     if (!existingStream) {
@@ -47,7 +46,6 @@ export async function DELETE(
       );
     }
 
-    // Only the creator (stream's user) can delete
     if (existingStream.user.email !== userEmail) {
       return NextResponse.json(
         { message: "Forbidden: Not the owner" },
@@ -55,7 +53,6 @@ export async function DELETE(
       );
     }
 
-    // Delete the stream from the database
     await prismaClient.stream.delete({ where: { id: streamId } });
 
     return NextResponse.json(
