@@ -7,11 +7,9 @@ const StreamIdSchema = z.object({
   streamId: z.string(),
 });
 
-export async function DELETE(
-  req: NextRequest,
-  context: { params: { streamId: string } }
-): Promise<NextResponse> {
-  const { streamId } = context.params;
+export async function DELETE(req: NextRequest): Promise<NextResponse> {
+  // Extract streamId from the URL
+  const streamId = req.nextUrl.pathname.split("/").pop();
 
   if (!streamId) {
     return NextResponse.json(
